@@ -38,32 +38,6 @@ func BenchmarkCircularQueue_PushKick(b *testing.B) {
 }
 
 
-func BenchmarkCircularQueueThreadSafe_ShiftAll1(b *testing.B) {
-	cq := NewCircularQueueThreadSafe(1000)
-	for i := 0; i < 1000000; i++ {
-		cq.PushKick(i)
-	}
-	b.ResetTimer()
-	cq._ShiftAll1()
-}
-
-func BenchmarkCircularQueueThreadSafe_ShiftAll2(b *testing.B) {
-	cq := NewCircularQueueThreadSafe(1000)
-	for i := 0; i < 100000; i++ {
-		cq.PushKick(i)
-	}
-	b.ResetTimer()
-	cq._ShiftAll2()
-}
-
-func BenchmarkCircularQueueThreadSafe_ShiftAll3(b *testing.B) {
-	cq := NewCircularQueueThreadSafe(1000)
-	for i := 0; i < 100000; i++ {
-		cq.PushKick(i)
-	}
-	b.ResetTimer()
-	cq._ShiftAll3()
-}
 
 func BenchmarkSliceAppendInitedSize(b *testing.B) {
 	a := make([]int, 0, b.N)
