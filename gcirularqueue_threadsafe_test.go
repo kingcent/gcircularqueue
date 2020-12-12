@@ -1,6 +1,7 @@
 package gcircularqueue
 
 import (
+	. "github.com/smartystreets/goconvey/convey"
 	"testing"
 )
 
@@ -73,3 +74,81 @@ func TestThreadSafeCirculartAility(t *testing.T) {
 	cq.Shift()
 	cq.Push(3)
 }
+
+func TestCircularQueueThreadSafe_PushKick(t *testing.T) {
+	size := 1000
+	l := 1000000
+	cq := NewCircularQueueThreadSafe(size)
+	for i := 1; i < l; i++ {
+		cq.PushKick(i)
+	}
+	s := l%size + (int(l/size)-1)*size
+	for i := s; i < s+size; i++ {
+		v := cq.Shift()
+		if v.(int) != i {
+			t.Error("error value ", i, v)
+		}
+	}
+}
+
+func TestCircularQueueThreadSafe_SizeCorrect(t *testing.T) {
+	Convey("size should correct 1", t, func() {
+		size := 1000
+		l := 1000000
+		cq := NewCircularQueueThreadSafe(size)
+		for i := 1; i < l; i++ {
+			cq.PushKick(i)
+		}
+		So(cq.Len() == size, ShouldBeTrue)
+	})
+	Convey("size should correct 2", t, func() {
+		size := 1000
+		l := 100
+		cq := NewCircularQueueThreadSafe(size)
+		for i := 0; i < l; i++ {
+			cq.PushKick(i)
+		}
+		So(cq.Len() == l, ShouldBeTrue)
+	})
+	Convey("size should correct 3", t, func() {
+		size := 1000
+		l := 1000000
+		cq := NewCircularQueueThreadSafe(size)
+		for i := 1; i < l; i++ {
+			cq.PushKick(i)
+		}
+		cq.Shift()
+		cq.Shift()
+		So(cq.Len() == size - 2, ShouldBeTrue)
+	})
+	Convey("size should correct 4", t, func() {
+		size := 1000
+		l := 1000000
+		cq := NewCircularQueueThreadSafe(size)
+		for i := 1; i < l; i++ {
+			cq.PushKick(i)
+		}
+		cq.ShiftAll()
+		So(cq.Len() == 0, ShouldBeTrue)
+	})
+}
+
+func TestCircularQueueThreadSafe_ShiftAll(t *testing.T) {
+	Convey("ShiftAll", t, func() {
+		size := 1000
+		l := 1000000
+		cq := NewCircularQueueThreadSafe(size)
+		for i := 0; i < l; i++ {
+			cq.PushKick(i)
+		}
+		all := cq.ShiftAll()
+		So(len(all) == 1000, ShouldBeTrue)
+		So(cq.Len() == 0, ShouldBeTrue)
+		cq.PushKick(2134)
+		cq.PushKick(323)
+		So(cq.Len() == 2, ShouldBeTrue)
+		all = cq.ShiftAll()
+		So(len(all) == 2, ShouldBeTrue)
+	})
+}
+

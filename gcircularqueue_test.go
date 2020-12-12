@@ -1,6 +1,7 @@
 package gcircularqueue
 
 import (
+	"fmt"
 	"testing"
 )
 
@@ -71,4 +72,22 @@ func TestCirculartAility(t *testing.T) {
 	cq.Push(3)
 	cq.Shift()
 	cq.Push(3)
+}
+
+func TestCircularQueue_PushKick(t *testing.T) {
+	size := 1000
+	l := 1000000
+	cq := NewCircularQueue(size)
+	for i := 1; i < l; i++ {
+		cq.PushKick(i)
+	}
+	s := l % size + (int(l/size) - 1)*size
+	for i := s; i < s+size; i++ {
+		v := cq.Shift()
+		fmt.Println(i, v)
+		if v.(int) != i {
+			t.Error("error value ", i, v)
+		}
+	}
+
 }
